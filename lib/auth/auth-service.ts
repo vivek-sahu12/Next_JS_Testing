@@ -1,4 +1,4 @@
-import { AuthResponse, LoginCredentials } from '@/types/auth';
+import { AuthResponse, LoginCredentials, SignUpCredentials } from '@/types/auth';
 
 export const DEMO_CREDENTIALS = {
   email: 'alex@nexus.ai',
@@ -6,6 +6,20 @@ export const DEMO_CREDENTIALS = {
 };
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+/**
+ * Validates a user's full name.
+ */
+export function validateName(name: string): string | null {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    return 'Full name is required';
+  }
+  if (trimmed.length < 2) {
+    return 'Name must be at least 2 characters';
+  }
+  return null;
+}
 
 /**
  * Validates an email address.
@@ -22,7 +36,7 @@ export function validateEmail(email: string): string | null {
 }
 
 /**
- * Validates a password input.
+ * Validates a password.
  */
 export function validatePassword(password: string): string | null {
   if (!password) {
@@ -35,7 +49,20 @@ export function validatePassword(password: string): string | null {
 }
 
 /**
- * Mock Authentication Service
+ * Validates confirmation password match.
+ */
+export function validateConfirmPassword(password: string, confirmPassword: string): string | null {
+  if (!confirmPassword) {
+    return 'Please confirm your password';
+  }
+  if (password !== confirmPassword) {
+    return 'Passwords do not match';
+  }
+  return null;
+}
+
+/**
+ * Mock Authentication (Sign In)
  */
 export async function authenticateUser(credentials: LoginCredentials): Promise<AuthResponse> {
   const email = credentials.email.trim().toLowerCase();
@@ -44,7 +71,6 @@ export async function authenticateUser(credentials: LoginCredentials): Promise<A
   // Simulate network latency (500ms)
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // Check demo credentials or valid format with demo password
   if (
     (email === DEMO_CREDENTIALS.email.toLowerCase() && password === DEMO_CREDENTIALS.password) ||
     password === DEMO_CREDENTIALS.password
@@ -52,21 +78,50 @@ export async function authenticateUser(credentials: LoginCredentials): Promise<A
     return {
       success: true,
       message: 'Authentication successful',
-      token: 'mock_jwt_token_' + Math.random().toString(36).substring(2),
+      token: 'mock_jwt_' + Math.random().toString(36).substring(2),
       user: {
-        id: 'usr_98472918',
-        name: 'Alex Rivera',
+        id: 'usr_84920194',
+        name: email === DEMO_CREDENTIALS.email ? 'Alex Rivera' : email.split('@')[0],
         email: email,
-        role: 'Team Member',
-        organization: 'Acme Corp',
+        organization: 'Acme Cloud',
       },
     };
   }
 
-  // Failed authentication
   return {
     success: false,
     error: 'Invalid email or password. Please try again.',
+  };
+}
+
+/**
+ * Mock Registration (Sign Up)
+ */
+export async function registerUser(credentials: SignUpCredentials): Promise<AuthResponse> {
+  const name = credentials.name.trim();
+  const email = credentials.email.trim().toLowerCase();
+
+  // Simulate network latency (500ms)
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  // Simulated email taken check
+  if (email === 'taken@example.com') {
+    return {
+      success: false,
+      error: 'An account with this email already exists. Please sign in.',
+    };
+  }
+
+  return {
+    success: true,
+    message: 'Account created successfully',
+    token: 'mock_jwt_signup_' + Math.random().toString(36).substring(2),
+    user: {
+      id: 'usr_new_' + Math.random().toString(36).substring(2, 8),
+      name: name,
+      email: email,
+      organization: 'Personal Workspace',
+    },
   };
 }
 

@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import { LoginPageLayout } from '@/components/auth/LoginPageLayout';
+import { SignInForm } from '@/components/auth/SignInForm';
 
 export const metadata: Metadata = {
-  title: 'Sign In — Nexus Enterprise Cloud',
-  description:
-    'Sign in to your Nexus enterprise workspace with single sign-on or work email.',
+  title: 'Sign In — Nexus',
+  description: 'Sign in to access your enterprise workspace.',
 };
 
 export default function Home() {
-  return <LoginPageLayout />;
+  return <SignInForm />;
 }

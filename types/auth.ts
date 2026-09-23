@@ -33,6 +33,8 @@ export interface SignInErrors {
   general?: string;
 }
 
+export type FormErrors = SignInErrors;
+
 export interface SignUpErrors {
   name?: string;
   email?: string;

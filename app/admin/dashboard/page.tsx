@@ -1,5 +1,5 @@
 
 
 export default function dashboard() {
-    return <h1>Admin Dashboard Page</h1>;
+    return <h1>admin dashboard page main</h1>;
 }

@@ -121,7 +121,7 @@ export function SignInForm() {
       subtitle="Please enter your credentials to sign in."
       footerText="Don't have an account?"
       footerLinkText="Sign up"
-      footerLinkHref="/signup"
+      footerLinkHref="/SignUpForm"
     >
       {errors.general && (
         <div

@@ -6,21 +6,34 @@ import { Sun, Moon } from 'lucide-react';
 function subscribeToTheme(callback: () => void) {
   if (typeof window === 'undefined') return () => {};
   window.addEventListener('storage', callback);
-  const mq = window.matchMedia('(prefers-color-scheme: dark)');
-  mq.addEventListener('change', callback);
-  return () => {
-    window.removeEventListener('storage', callback);
-    mq.removeEventListener('change', callback);
-  };
+  try {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', callback);
+    return () => {
+      window.removeEventListener('storage', callback);
+      mq.removeEventListener('change', callback);
+    };
+  } catch {
+    return () => {
+      window.removeEventListener('storage', callback);
+    };
+  }
 }
 
 function getThemeSnapshot(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light';
-  const saved = localStorage.getItem('theme');
-  if (saved === 'dark' || saved === 'light') {
-    return saved;
-  }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  try {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || saved === 'light') {
+      return saved;
+    }
+  } catch {}
+  try {
+    if (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches) {
+      return 'dark';
+    }
+  } catch {}
+  return 'light';
 }
 
 function getServerSnapshot(): 'light' | 'dark' {
@@ -32,7 +45,9 @@ export function ThemeToggle() {
 
   const toggleTheme = () => {
     const next = theme === 'light' ? 'dark' : 'light';
-    localStorage.setItem('theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
     if (next === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
